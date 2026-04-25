@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, ParseArrayPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
 import { WaterBodiesService } from './water-bodies.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -33,7 +33,7 @@ export class WaterBodiesController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN')
-    @Put(':id')
+    @Patch(':id')
     update(@Param('id') id: string, @Body() updateData: UpdateWaterBodyDto) {
         return this.waterBodiesService.update(id, updateData);
     }
@@ -63,23 +63,11 @@ export class WaterBodiesController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('ADMIN')
-    @Patch(':id/measurements/:measurementId')
-    updateMeasurement(
+    @Put(':id/passport')
+    updatePassport(
         @Param('id') id: string,
-        @Param('measurementId') measurementId: string,
-        @Body() measurementData: CreateMeasurementDto,
+        @Body() passportData: any,
     ) {
-        return this.waterBodiesService.updateMeasurement(id, measurementId, measurementData);
+        return this.waterBodiesService.upsertPassport(id, passportData);
     }
-
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('ADMIN')
-    @Delete(':id/measurements/:measurementId')
-    removeMeasurement(
-        @Param('id') id: string,
-        @Param('measurementId') measurementId: string,
-    ) {
-        return this.waterBodiesService.removeMeasurement(id, measurementId);
-    }
-
 }

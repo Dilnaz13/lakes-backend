@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from "bcrypt";
+
+import * as bcrypt from 'bcrypt'; // 👈 ОБЯЗАТЕЛЬНО
 
 import  { UsersService } from "../users/users.service";
 import { RegisterDto, LoginDto } from './dto/auth.dto';
@@ -25,6 +26,7 @@ export class AuthService {
         }
 
         const hashedPassword = await bcrypt.hash(data.password, 10);
+
 
         const user = await this.usersService.create({
             login: data.login,

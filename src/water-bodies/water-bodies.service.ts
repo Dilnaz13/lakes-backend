@@ -97,42 +97,43 @@ export class WaterBodiesService {
         });
     }
 
-    async updateMeasurement(
-    waterBodyId: string,
-    measurementId: string,
-    data: CreateMeasurementDto
-    ) {
-        const measurement = await this.prisma.bioIndicationRecord.findFirst({
-            where: {
-                id: measurementId,
-                waterBodyId,
-            },
+    async updateMeasurement(id: string, data: CreateMeasurementDto) {
+        const measurement = await this.prisma.bioIndicationRecord.findUnique({
+            where: { id },
         });
-
+    
         if (!measurement) {
-            throw new NotFoundException(`Замер с ID ${measurementId} не найден`);
+            throw new NotFoundException(`Замер с ID ${id} не найден`);
         }
-
+        
         return this.prisma.bioIndicationRecord.update({
-            where: { id: measurementId },
-            data,
+            where: { id },
+            data: {
+                ...data,
+                recordDate: data.recordDate ? new Date(data.recordDate) : undefined,
+            },
         });
     }
 
-    async removeMeasurement(waterBodyId: string, measurementId: string) {
-        const measurement = await this.prisma.bioIndicationRecord.findFirst({
-            where: {
-                id: measurementId,
-                waterBodyId,
-            },
+    async removeMeasurement(id: string) {
+        const measurement = await this.prisma.bioIndicationRecord.findUnique({
+            where: { id },
         });
         
         if (!measurement) {
-            throw new NotFoundException(`Замер с ID ${measurementId} не найден`);
+            throw new NotFoundException(`Замер с ID ${id} не найден`);
         }
-
+        
         return this.prisma.bioIndicationRecord.delete({
-            where: { id: measurementId },
+            where: { id },
         });
+    }
+
+    upsertPassport(waterBodyId: string, dto: any) {
+        return this.prisma.waterBodyPassport.upsert({
+             where: { waterBodyId },
+             update: dto,
+             create: { ...dto, waterBodyId },
+            });
     }
 }
